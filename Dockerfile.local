@@ -1,0 +1,44 @@
+FROM eclipse-temurin:25-jdk-noble AS builder
+
+WORKDIR /workspace
+
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends libicu74 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . .
+
+# Windows checkouts may use CRLF; Linux must be able to execute the wrapper.
+RUN sed -i 's/\r$//' mvnw get-version.sh set-version.sh \
+    && chmod +x mvnw get-version.sh set-version.sh
+
+ENV MAVEN_OPTS="-Xms512m -Xmx3g -XX:+UseG1GC"
+
+# Build only the Keycloak server distribution and skip the test suites.
+RUN ./mvnw -B -ntp \
+    -pl quarkus/deployment,quarkus/dist \
+    -am \
+    -DskipTests \
+    clean install
+
+FROM eclipse-temurin:25-jre-noble AS runtime
+
+ENV KC_RUN_IN_CONTAINER=true
+
+RUN groupadd --gid 1001 keycloak \
+    && useradd --uid 1001 --gid keycloak --home-dir /opt/keycloak --shell /usr/sbin/nologin keycloak \
+    && mkdir -p /opt/keycloak /opt/keycloak/data
+
+COPY --from=builder /workspace/quarkus/dist/target/keycloak-*.tar.gz /tmp/keycloak.tar.gz
+
+RUN tar -xzf /tmp/keycloak.tar.gz --strip-components=1 -C /opt/keycloak \
+    && rm /tmp/keycloak.tar.gz \
+    && chown -R keycloak:keycloak /opt/keycloak
+
+USER keycloak
+WORKDIR /opt/keycloak
+
+EXPOSE 8080 8443 9000
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start-dev"]

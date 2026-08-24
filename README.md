@@ -1,3 +1,72 @@
+# Chạy source này bằng Docker Desktop
+
+Cấu hình trong repository sẽ build Keycloak trực tiếp từ source. Máy host chỉ cần cài
+[Git](https://git-scm.com/downloads) và
+[Docker Desktop](https://www.docker.com/products/docker-desktop/); không cần cài Java,
+Maven, Node.js hoặc pnpm riêng.
+
+## Build và chạy
+
+Khởi động Docker Desktop, mở terminal tại thư mục repository rồi chạy:
+
+```powershell
+docker compose up -d --build
+```
+
+Lần build đầu tiên cần tải dependency và biên dịch backend/frontend nên có thể mất vài phút.
+Khi container báo `healthy`, truy cập:
+
+- Admin Console: http://localhost:8080/admin/master/console/
+- Health endpoint: http://localhost:9000/health/ready
+
+Tài khoản local mặc định:
+
+```text
+Username: admin
+Password: admin
+```
+
+Có thể thay tài khoản bootstrap trước lần chạy đầu bằng biến môi trường:
+
+```powershell
+$env:KEYCLOAK_ADMIN_USERNAME="my-admin"
+$env:KEYCLOAK_ADMIN_PASSWORD="change-this-password"
+docker compose up -d --build
+```
+
+## Các lệnh quản lý
+
+```powershell
+# Xem trạng thái
+docker compose ps
+
+# Xem log
+docker compose logs -f keycloak
+
+# Tắt và giữ nguyên dữ liệu
+docker compose down
+
+# Chạy lại, không build source
+docker compose up -d
+
+# Build lại sau khi sửa source
+docker compose up -d --build
+```
+
+Dữ liệu local được lưu trong Docker volume `keycloak-local-data`. Không dùng
+`docker compose down -v` nếu muốn giữ realms, users, clients và cấu hình đã tạo.
+
+> Cấu hình này chạy `start-dev` cùng database H2 và tài khoản mặc định, chỉ phù hợp
+> cho phát triển/thử nghiệm cục bộ. Không dùng nguyên trạng cho production.
+
+Các file liên quan:
+
+- `Dockerfile.local`: build server distribution từ source bằng Maven Wrapper và JDK 25.
+- `docker-compose.yml`: chạy container, cấu hình tài khoản, port, healthcheck và volume.
+- `.dockerignore`: loại các artifact không cần thiết khỏi Docker build context.
+
+---
+
 ![Keycloak](https://github.com/keycloak/keycloak-misc/blob/main/logo/logo.svg)
 
 ![GitHub Release](https://img.shields.io/github/v/release/keycloak/keycloak?label=latest%20release)
