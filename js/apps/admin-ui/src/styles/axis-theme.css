@@ -1,0 +1,1175 @@
+/*
+ * Axis visual experiment for the Keycloak Admin Console.
+ *
+ * Keep the overrides in one layer so the experiment can be reviewed or
+ * removed without changing the behaviour of individual React components.
+ */
+
+:root {
+  --axis-primary: #2ecda7;
+  --axis-primary-hover: #25b995;
+  --axis-primary-active: #1fa686;
+  --axis-primary-soft: #dff8f1;
+  --axis-primary-softer: #effbf8;
+  --axis-ink: #172b4d;
+  --axis-ink-muted: #637083;
+  --axis-muted: #9db1cb;
+  --axis-canvas: #f6f8fb;
+  --axis-surface: #ffffff;
+  --axis-surface-subdued: #f0f4f8;
+  --axis-border: #d7e1ec;
+  --axis-border-strong: #c2cfdd;
+  --axis-radius-sm: 8px;
+  --axis-radius-md: 12px;
+  --axis-radius-lg: 16px;
+  --axis-shadow-focus: 0 0 0 3px rgb(46 205 167 / 14%);
+  --axis-shadow-popup: 0 14px 34px rgb(23 43 77 / 14%);
+
+  /* PatternFly token bridge */
+  --pf-v5-global--primary-color--100: var(--axis-primary);
+  --pf-v5-global--primary-color--200: var(--axis-primary-hover);
+  --pf-v5-global--primary-color--300: var(--axis-primary-active);
+  --pf-v5-global--active-color--100: var(--axis-primary);
+  --pf-v5-global--active-color--200: var(--axis-primary-hover);
+  --pf-v5-global--active-color--300: var(--axis-primary-active);
+  --pf-v5-global--link--Color: var(--axis-primary-active);
+  --pf-v5-global--link--Color--hover: var(--axis-primary-hover);
+  --pf-v5-global--link--Color--visited: var(--axis-primary-active);
+  --pf-v5-global--Color--100: var(--axis-ink);
+  --pf-v5-global--Color--200: var(--axis-ink-muted);
+  --pf-v5-global--BackgroundColor--100: var(--axis-surface);
+  --pf-v5-global--BackgroundColor--200: var(--axis-canvas);
+  --pf-v5-global--BackgroundColor--light-300: var(--axis-surface-subdued);
+  --pf-v5-global--BorderColor--100: var(--axis-border);
+  --pf-v5-global--BorderColor--200: var(--axis-border-strong);
+  --pf-v5-global--BorderRadius--sm: var(--axis-radius-sm);
+}
+
+body,
+.pf-v5-c-page {
+  color: var(--axis-ink);
+  background: var(--axis-canvas);
+}
+
+/* Masthead */
+.pf-v5-c-masthead {
+  --pf-v5-c-masthead--BackgroundColor: var(--axis-primary);
+  min-height: 72px;
+  border-bottom: 1px solid rgb(23 43 77 / 10%);
+  box-shadow: none;
+}
+
+.pf-v5-c-masthead .pf-v5-c-button,
+.pf-v5-c-masthead .pf-v5-c-dropdown__toggle,
+.pf-v5-c-masthead .pf-v5-c-menu-toggle {
+  color: #fff;
+}
+
+.pf-v5-c-masthead .pf-v5-c-button:hover,
+.pf-v5-c-masthead .pf-v5-c-dropdown__toggle:hover,
+.pf-v5-c-masthead .pf-v5-c-menu-toggle:hover {
+  background: rgb(255 255 255 / 14%);
+}
+
+.pf-v5-c-masthead .pf-v5-c-avatar {
+  border: 2px solid rgb(255 255 255 / 75%);
+  border-radius: 50%;
+}
+
+/* Sidebar: use a light contextual rail like Axis. */
+.pf-v5-c-page__sidebar {
+  --pf-v5-c-page__sidebar--BackgroundColor: #f3f6f9;
+  color: var(--axis-ink);
+  border-right: 1px solid var(--axis-border);
+  box-shadow: none;
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav {
+  --pf-v5-c-nav__link--Color: var(--axis-ink);
+  --pf-v5-c-nav__link--hover--Color: var(--axis-ink);
+  --pf-v5-c-nav__link--hover--BackgroundColor: #e8eef4;
+  --pf-v5-c-nav__link--m-current--Color: var(--axis-ink);
+  --pf-v5-c-nav__link--m-current--BackgroundColor: #e1e8f0;
+  padding: 12px;
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav__link {
+  margin: 2px 0;
+  border-radius: var(--axis-radius-md);
+  font-weight: 500;
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav__link::after {
+  border: 0;
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav__link.pf-m-current,
+.pf-v5-c-page__sidebar .pf-v5-c-nav__link[aria-current="page"] {
+  box-shadow: inset 3px 0 0 var(--axis-primary);
+}
+
+/* Page surfaces and headers */
+.pf-v5-c-page__main {
+  background: var(--axis-surface);
+}
+
+.pf-v5-c-page__main-section {
+  --pf-v5-c-page__main-section--BackgroundColor: var(--axis-surface);
+}
+
+.pf-v5-c-page__main-section + .pf-v5-c-page__main-section {
+  border-top-color: var(--axis-border);
+}
+
+.pf-v5-c-title {
+  color: var(--axis-ink);
+  letter-spacing: -0.015em;
+}
+
+/* Buttons */
+.pf-v5-c-button {
+  border-radius: var(--axis-radius-md);
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    box-shadow 140ms ease,
+    color 140ms ease;
+}
+
+/* Only text/action buttons receive the larger Axis dimensions. Applying
+ * these values to every PatternFly button also enlarges search, kebab and
+ * pagination controls and breaks toolbar alignment. */
+.pf-v5-c-button:is(.pf-m-primary, .pf-m-secondary, .pf-m-tertiary) {
+  min-height: 42px;
+  padding-inline: 22px;
+  font-weight: 600;
+}
+
+.pf-v5-c-button:is(.pf-m-plain, .pf-m-control) {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border-radius: 10px;
+}
+
+.pf-v5-c-button.pf-m-primary {
+  --pf-v5-c-button--m-primary--BackgroundColor: var(--axis-primary);
+  --pf-v5-c-button--m-primary--hover--BackgroundColor: var(
+    --axis-primary-hover
+  );
+  --pf-v5-c-button--m-primary--active--BackgroundColor: var(
+    --axis-primary-active
+  );
+  border: 1px solid transparent;
+}
+
+.pf-v5-c-button.pf-m-secondary {
+  --pf-v5-c-button--m-secondary--Color: var(--axis-ink);
+  --pf-v5-c-button--m-secondary--BorderColor: var(--axis-border-strong);
+  background: var(--axis-surface);
+}
+
+.pf-v5-c-button.pf-m-secondary:hover {
+  background: var(--axis-surface-subdued);
+}
+
+.pf-v5-c-button.pf-m-link {
+  color: var(--axis-primary-active);
+}
+
+/* Form controls */
+.pf-v5-c-form-control,
+.pf-v5-c-text-input-group,
+.pf-v5-c-select__toggle,
+.pf-v5-c-menu-toggle,
+.pf-v5-c-number-input,
+.pf-v5-c-date-picker__input {
+  min-height: 44px;
+  border-radius: var(--axis-radius-md);
+}
+
+.pf-v5-c-form-control,
+.pf-v5-c-text-input-group,
+.pf-v5-c-select__toggle,
+.pf-v5-c-menu-toggle {
+  border-color: var(--axis-border-strong);
+  background: var(--axis-surface);
+  box-shadow: none;
+}
+
+.pf-v5-c-form-control:focus-within,
+.pf-v5-c-text-input-group:focus-within,
+.pf-v5-c-select__toggle:focus,
+.pf-v5-c-menu-toggle:focus,
+.pf-v5-c-menu-toggle.pf-m-expanded {
+  border-color: var(--axis-primary);
+  box-shadow: var(--axis-shadow-focus);
+}
+
+.pf-v5-c-form__label-text {
+  color: var(--axis-ink);
+  font-weight: 600;
+}
+
+.pf-v5-c-form__helper-text,
+.pf-v5-c-helper-text {
+  color: var(--axis-muted);
+}
+
+input[type="checkbox"] {
+  accent-color: var(--axis-primary);
+}
+
+/* Tabs */
+.pf-v5-c-tabs {
+  --pf-v5-c-tabs__link--Color: var(--axis-ink-muted);
+  --pf-v5-c-tabs__link--m-current--Color: var(--axis-primary-active);
+  --pf-v5-c-tabs--before--BorderBottomWidth: 0;
+  border-bottom: 1px solid var(--axis-border);
+}
+
+.pf-v5-c-tabs__link {
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.pf-v5-c-tabs__item {
+  position: relative;
+}
+
+.pf-v5-c-tabs__item::after {
+  border: 0 !important;
+}
+
+.pf-v5-c-tabs__item.pf-m-current::after {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  z-index: 1;
+  height: 2px;
+  background: var(--axis-primary);
+  border: 0 !important;
+  content: "";
+}
+
+/* Keep search as one compact control: icon and clear action live inside the
+ * field, while Enter submits from the React component. */
+.pf-v5-c-search-input,
+.pf-v5-c-input-group:has(.pf-v5-c-search-input),
+.pf-v5-c-input-group:has(.pf-v5-c-text-input-group) {
+  border-radius: var(--axis-radius-md);
+}
+
+.pf-v5-c-search-input {
+  border: 1px solid var(--axis-border-strong) !important;
+  border-radius: var(--axis-radius-md) !important;
+  background: var(--axis-surface) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.pf-v5-c-search-input:focus-within {
+  border-color: var(--axis-primary) !important;
+  box-shadow: var(--axis-shadow-focus) !important;
+}
+
+/* SearchInput already owns the visual border. PatternFly also gives its
+ * nested TextInputGroup a border, which otherwise creates the black inner
+ * rectangle visible around only the editable part of the control. */
+.pf-v5-c-search-input .pf-v5-c-text-input-group,
+.pf-v5-c-search-input
+  .pf-v5-c-text-input-group:is(:hover, :focus, :focus-within) {
+  min-height: 42px;
+  border: 0 !important;
+  border-radius: inherit !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0 !important;
+}
+
+.pf-v5-c-search-input input,
+.pf-v5-c-search-input input:focus,
+.pf-v5-c-search-input input:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-search-input .pf-v5-c-form-control,
+.pf-v5-c-search-input .pf-v5-c-form-control:focus,
+.pf-v5-c-search-input .pf-v5-c-form-control:focus-within,
+.pf-v5-c-text-input-group .pf-v5-c-form-control,
+.pf-v5-c-text-input-group .pf-v5-c-form-control:focus {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-search-input .pf-v5-c-form-control::before,
+.pf-v5-c-search-input .pf-v5-c-form-control::after,
+.pf-v5-c-text-input-group .pf-v5-c-form-control::before,
+.pf-v5-c-text-input-group .pf-v5-c-form-control::after {
+  border: 0 !important;
+}
+
+.pf-v5-c-search-input .pf-v5-c-button.pf-m-plain,
+.pf-v5-c-text-input-group__utilities .pf-v5-c-button.pf-m-plain {
+  width: 38px;
+  height: 38px;
+  margin-inline-end: 2px;
+  padding: 0;
+  border-radius: var(--axis-radius-sm);
+}
+
+/* Tables and toolbars */
+.pf-v5-c-table {
+  --pf-v5-c-table--BorderColor: var(--axis-border);
+  color: var(--axis-ink);
+  border: 0;
+}
+
+.pf-v5-c-table > thead {
+  background: var(--axis-surface-subdued);
+}
+
+.pf-v5-c-table > tbody > tr:hover {
+  background: var(--axis-primary-softer);
+}
+
+.pf-v5-c-toolbar {
+  --pf-v5-c-toolbar--BackgroundColor: var(--axis-surface);
+}
+
+.pf-v5-c-toolbar,
+.pf-v5-c-toolbar__content,
+.pf-v5-c-toolbar__group,
+.pf-v5-c-toolbar__item {
+  box-sizing: border-box;
+}
+
+.pf-v5-c-label {
+  border-radius: 999px;
+}
+
+/* Cards, menus and dialogs */
+.pf-v5-c-card,
+.pf-v5-c-modal-box,
+.pf-v5-c-popover__content,
+.pf-v5-c-menu,
+.pf-v5-c-dropdown__menu {
+  border: 1px solid var(--axis-border);
+  border-radius: var(--axis-radius-lg);
+  box-shadow: var(--axis-shadow-popup);
+}
+
+.pf-v5-c-modal-box__header,
+.pf-v5-c-modal-box__footer {
+  border-color: var(--axis-border);
+}
+
+.pf-v5-c-modal-box__footer {
+  gap: 10px;
+}
+
+.pf-v5-c-menu__item:hover,
+.pf-v5-c-menu__item:focus,
+.pf-v5-c-dropdown__menu-item:hover,
+.pf-v5-c-dropdown__menu-item:focus {
+  background: var(--axis-primary-soft);
+  color: var(--axis-primary-active);
+}
+
+.pf-v5-c-alert.pf-m-info {
+  border-left-color: var(--axis-primary);
+  background: var(--axis-primary-softer);
+}
+
+@media (max-width: 768px) {
+  .pf-v5-c-masthead {
+    min-height: 64px;
+  }
+
+  .pf-v5-c-button {
+    padding-inline: 16px;
+  }
+}
+
+/*
+ * PatternFly v5 defines a number of component-scoped tokens after the global
+ * tokens above. These explicit rules form the visual compatibility layer for
+ * the Admin Console and intentionally win over those component defaults.
+ */
+.pf-v5-c-masthead,
+.pf-v5-c-page__header {
+  --pf-v5-c-masthead--BackgroundColor: var(--axis-primary);
+  --pf-v5-global--BackgroundColor--dark-100: var(--axis-primary);
+  background-color: var(--axis-primary) !important;
+}
+
+.pf-v5-c-masthead,
+.pf-v5-c-masthead :is(.pf-v5-c-button, .pf-v5-c-menu-toggle),
+.pf-v5-c-page__header,
+.pf-v5-c-page__header :is(.pf-v5-c-button, .pf-v5-c-menu-toggle) {
+  color: #fff;
+}
+
+/* Masthead actions should remain icon controls, not white form controls. */
+.pf-v5-c-masthead :is(.pf-v5-c-button, .pf-v5-c-menu-toggle),
+.pf-v5-c-page__header :is(.pf-v5-c-button, .pf-v5-c-menu-toggle) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  color: #fff !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-masthead :is(.pf-v5-c-button, .pf-v5-c-menu-toggle):hover,
+.pf-v5-c-page__header :is(.pf-v5-c-button, .pf-v5-c-menu-toggle):hover,
+.pf-v5-c-masthead .pf-v5-c-menu-toggle.pf-m-expanded,
+.pf-v5-c-page__header .pf-v5-c-menu-toggle.pf-m-expanded {
+  background: rgb(255 255 255 / 14%) !important;
+  border-color: rgb(255 255 255 / 24%) !important;
+}
+
+.pf-v5-c-masthead .pf-v5-c-menu-toggle__text,
+.pf-v5-c-page__header .pf-v5-c-menu-toggle__text {
+  color: #fff;
+}
+
+.pf-v5-c-page__sidebar,
+.pf-v5-c-page__sidebar.pf-m-light,
+.pf-v5-c-page__sidebar-body,
+.pf-v5-c-page__sidebar-body.pf-m-menu {
+  --pf-v5-c-page__sidebar--BackgroundColor: #f3f6f9;
+  background-color: #f3f6f9 !important;
+  color: var(--axis-ink) !important;
+}
+
+.pf-v5-c-page__sidebar :is(.pf-v5-c-nav__link, .pf-v5-c-title, a, button) {
+  color: var(--axis-ink);
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav__section-title {
+  color: var(--axis-ink-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pf-v5-c-page__sidebar .pf-v5-c-nav__link:hover {
+  background-color: #e8eef4;
+}
+
+.pf-v5-c-page__sidebar
+  .pf-v5-c-nav__link:is(.pf-m-current, [aria-current="page"]) {
+  background-color: #dfe8f0 !important;
+  color: var(--axis-ink) !important;
+}
+
+/* PatternFly draws form borders using two pseudo-elements. Replace both with
+ * one complete, rounded outline so inputs match the Axis visual language. */
+.pf-v5-c-form-control {
+  --pf-v5-c-form-control--before--BorderTopWidth: 1px;
+  --pf-v5-c-form-control--before--BorderRightWidth: 1px;
+  --pf-v5-c-form-control--before--BorderBottomWidth: 1px;
+  --pf-v5-c-form-control--before--BorderLeftWidth: 1px;
+  --pf-v5-c-form-control--before--BorderTopColor: var(--axis-border-strong);
+  --pf-v5-c-form-control--before--BorderRightColor: var(--axis-border-strong);
+  --pf-v5-c-form-control--before--BorderBottomColor: var(--axis-border-strong);
+  --pf-v5-c-form-control--before--BorderLeftColor: var(--axis-border-strong);
+  --pf-v5-c-form-control--after--BorderBottomWidth: 0;
+  --pf-v5-c-form-control--after--BorderBottomColor: transparent;
+  --pf-v5-c-form-control--focus--after--BorderBottomWidth: 0;
+  min-height: 48px;
+  overflow: visible;
+  border: 0;
+  border-radius: var(--axis-radius-md);
+}
+
+.pf-v5-c-form-control::before,
+.pf-v5-c-form-control::after {
+  border-radius: inherit;
+}
+
+.pf-v5-c-form-control:hover::before {
+  border-color: #aebdcd;
+}
+
+.pf-v5-c-form-control:focus-within {
+  box-shadow: var(--axis-shadow-focus);
+}
+
+.pf-v5-c-form-control:focus-within::before,
+.pf-v5-c-form-control.pf-m-expanded::before {
+  border-color: var(--axis-primary);
+}
+
+.pf-v5-c-form-control > :is(input, select, textarea) {
+  min-height: 46px;
+  padding-inline: 16px;
+  border-radius: inherit;
+  outline: 0;
+}
+
+.pf-v5-c-form-control > textarea {
+  padding-block: 12px;
+}
+
+.pf-v5-c-form-control > ::placeholder {
+  color: var(--axis-muted);
+}
+
+/* Legacy PatternFly controls still used by several Keycloak screens. */
+:is(.pf-v5-c-text-input-group, .pf-v5-c-select__toggle, .pf-v5-c-menu-toggle) {
+  min-height: 48px;
+  border: 1px solid var(--axis-border-strong) !important;
+  border-radius: var(--axis-radius-md) !important;
+  background: var(--axis-surface) !important;
+  box-shadow: none !important;
+}
+
+/* Do not let the generic form-control compatibility rule restyle menu
+ * toggles placed in the green masthead. */
+.pf-v5-c-masthead .pf-v5-c-menu-toggle,
+.pf-v5-c-page__header .pf-v5-c-menu-toggle {
+  min-height: 44px;
+}
+
+:is(
+  .pf-v5-c-text-input-group,
+  .pf-v5-c-select__toggle,
+  .pf-v5-c-menu-toggle
+):is(:hover, :focus, :focus-within, .pf-m-expanded) {
+  border-color: var(--axis-primary) !important;
+  box-shadow: var(--axis-shadow-focus) !important;
+}
+
+.pf-v5-c-menu-toggle::before,
+.pf-v5-c-menu-toggle::after,
+.pf-v5-c-select__toggle::before,
+.pf-v5-c-select__toggle::after {
+  border: 0 !important;
+}
+
+.pf-v5-c-switch__input:checked ~ .pf-v5-c-switch__toggle {
+  --pf-v5-c-switch__toggle--BackgroundColor: var(--axis-primary);
+  background-color: var(--axis-primary);
+}
+
+.pf-v5-c-button.pf-m-primary {
+  background-color: var(--axis-primary) !important;
+  color: #fff !important;
+  border-radius: var(--axis-radius-md) !important;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background-color: var(--axis-primary-hover) !important;
+}
+
+.pf-v5-c-button.pf-m-primary:active {
+  background-color: var(--axis-primary-active) !important;
+}
+
+/* Axis compact search. TextInputGroup renders multiple nested PatternFly
+ * border layers; keep exactly one outline on the root container. */
+.pf-v5-c-text-input-group.axis-search-input {
+  min-height: 42px;
+  overflow: hidden;
+  border: 1px solid var(--axis-border-strong) !important;
+  border-radius: var(--axis-radius-md) !important;
+  background: var(--axis-surface) !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-text-input-group.axis-search-input:focus-within {
+  border-color: var(--axis-primary) !important;
+  box-shadow: var(--axis-shadow-focus) !important;
+}
+
+.axis-search-input::before,
+.axis-search-input::after,
+.axis-search-input .pf-v5-c-text-input-group__main::before,
+.axis-search-input .pf-v5-c-text-input-group__main::after,
+.axis-search-input .pf-v5-c-form-control::before,
+.axis-search-input .pf-v5-c-form-control::after {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.axis-search-input .pf-v5-c-text-input-group__main,
+.axis-search-input .pf-v5-c-form-control,
+.axis-search-input .pf-v5-c-text-input-group__text-input,
+.axis-search-input input,
+.axis-search-input input:is(:hover, :focus, :focus-visible) {
+  min-height: 40px;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.axis-search-input .pf-v5-c-text-input-group__utilities {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding-inline-end: 3px;
+}
+
+.axis-search-input .pf-v5-c-button.pf-m-plain {
+  width: 34px;
+  height: 34px;
+  margin: 0;
+  border: 0 !important;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.axis-search-input .pf-v5-c-button.pf-m-plain:hover {
+  background: var(--axis-surface-subdued);
+}
+
+/* PatternFly SearchInput (used by list toolbars) has a bar and a text-input
+ * wrapper of its own. Remove those inner outlines as well, leaving the root
+ * search control as the only visible boundary. */
+.pf-v5-c-search-input
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-search-input__text-input,
+    .pf-v5-c-form-control,
+    input
+  ),
+.pf-v5-c-search-input
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-search-input__text-input,
+    .pf-v5-c-form-control,
+    input
+  ):is(:hover, :focus, :focus-visible, :focus-within) {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-search-input
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-search-input__text-input,
+    .pf-v5-c-form-control
+  )::before,
+.pf-v5-c-search-input
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-search-input__text-input,
+    .pf-v5-c-form-control
+  )::after {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Give the tab rail the same breathing room as Axis while its own bottom
+ * border continues across the full available width. */
+.pf-v5-c-tabs {
+  padding-block-start: 10px;
+  padding-inline: 32px;
+}
+
+/* Convert boxed Keycloak tabs to the lighter Axis tab rail. PatternFly's
+ * boxed variant otherwise keeps its active indicator on the top edge. */
+.pf-v5-c-tabs.pf-m-box {
+  --pf-v5-c-tabs__link--BackgroundColor: transparent;
+  --pf-v5-c-tabs__link--before--BorderTopWidth: 0;
+  --pf-v5-c-tabs__link--before--BorderRightWidth: 0;
+  --pf-v5-c-tabs__link--before--BorderBottomWidth: 0;
+  --pf-v5-c-tabs__link--before--BorderLeftWidth: 0;
+  --pf-v5-c-tabs__link--after--Top: auto;
+  --pf-v5-c-tabs__link--after--Bottom: 0;
+  --pf-v5-c-tabs__link--after--BorderTopWidth: 0;
+  --pf-v5-c-tabs__link--after--BorderBottomWidth: 2px;
+}
+
+.pf-v5-c-tabs.pf-m-box .pf-v5-c-tabs__link {
+  min-height: 40px;
+  padding: 6px 18px;
+  background: transparent !important;
+}
+
+.pf-v5-c-tabs.pf-m-box .pf-v5-c-tabs__link::before {
+  border: 0 !important;
+}
+
+.pf-v5-c-tabs.pf-m-box .pf-v5-c-tabs__link::after {
+  inset-block-start: auto;
+  inset-block-end: -1px;
+  border-block-start-width: 0;
+  border-block-end-width: 2px;
+}
+
+/* The TextInputGroup border is drawn by the __text pseudo-elements. Disable
+ * those layers and let the rounded group root own the complete outline. */
+.pf-v5-c-text-input-group {
+  --pf-v5-c-text-input-group__text--before--BorderWidth: 0;
+  --pf-v5-c-text-input-group__text--after--BorderBottomWidth: 0;
+  --pf-v5-c-text-input-group__text--focus-within--after--BorderBottomWidth: 0;
+}
+
+.pf-v5-c-text-input-group__text,
+.pf-v5-c-text-input-group__text-input,
+.pf-v5-c-text-input-group__text-input:is(:hover, :focus, :focus-visible) {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-text-input-group__text::before,
+.pf-v5-c-text-input-group__text::after {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-button.pf-m-secondary,
+.pf-v5-c-button.pf-m-tertiary {
+  border: 1px solid var(--axis-border-strong);
+  border-radius: var(--axis-radius-md);
+}
+
+.pf-v5-c-tabs__item,
+.pf-v5-c-tabs__link {
+  border: 0 !important;
+  border-radius: 0;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-tabs__item:not(.pf-m-current) .pf-v5-c-tabs__link::before,
+.pf-v5-c-tabs__item:not(.pf-m-current) .pf-v5-c-tabs__link::after {
+  border: 0 !important;
+}
+
+.pf-v5-c-tabs__item.pf-m-current .pf-v5-c-tabs__link {
+  color: var(--axis-primary-active);
+  background: transparent;
+}
+
+.pf-v5-c-breadcrumb__link,
+.pf-v5-c-breadcrumb__item a {
+  color: var(--axis-primary-active);
+}
+
+.pf-v5-c-page__main-section.pf-m-light,
+.pf-v5-c-page__main-section[class*="pf-m-light"] {
+  background-color: var(--axis-surface);
+}
+
+.pf-v5-c-table > :is(thead, tbody) > tr > * {
+  border-bottom-color: var(--axis-border);
+}
+
+/* Keep list views crisp: one separator per structural boundary. */
+.pf-v5-c-table > thead > tr > * {
+  border-top: 1px solid var(--axis-border);
+  background: var(--axis-surface-subdued);
+}
+
+.pf-v5-c-table > tbody > tr > * {
+  background-clip: padding-box;
+}
+
+.pf-v5-c-table .pf-v5-c-button.pf-m-plain {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border: 0;
+  border-radius: 10px;
+}
+
+.pf-v5-c-table .pf-v5-c-button.pf-m-plain:hover {
+  background: var(--axis-surface-subdued);
+}
+
+/* Toolbar rhythm ---------------------------------------------------------
+ * PatternFly toolbars mix 40px icon actions, 42px searches and larger
+ * generic menu toggles. Normalize only this context so form controls keep
+ * their comfortable sizing elsewhere in the admin console. */
+.pf-v5-c-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.pf-v5-c-button :is(.pf-v5-c-button__text, span) {
+  line-height: 1.2;
+}
+
+.pf-v5-c-toolbar__content,
+.pf-v5-c-toolbar__group,
+.pf-v5-c-toolbar__item {
+  align-items: center;
+}
+
+.pf-v5-c-toolbar__item {
+  align-self: center;
+}
+
+.pf-v5-c-toolbar
+  :is(.pf-v5-c-search-input, .pf-v5-c-text-input-group.axis-search-input) {
+  min-height: 42px;
+}
+
+.pf-v5-c-toolbar
+  :is(.pf-v5-c-search-input, .pf-v5-c-text-input-group.axis-search-input)
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-text-input-group__main,
+    .pf-v5-c-text-input-group__text,
+    .pf-v5-c-text-input-group__text-input,
+    input
+  ) {
+  min-height: 40px;
+}
+
+.pf-v5-c-toolbar
+  :is(.pf-v5-c-text-input-group__text-input, .pf-v5-c-form-control, input) {
+  padding-block: 6px;
+}
+
+/* Keep the per-page selector in its original lightweight pagination style.
+ * It is a menu toggle internally, so exclude it from the rounded 48px form
+ * treatment applied to ordinary selects above. */
+.pf-v5-c-pagination .pf-v5-c-menu-toggle {
+  min-height: 40px;
+  padding-block: 6px;
+  padding-inline: 8px;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-pagination .pf-v5-c-menu-toggle::before,
+.pf-v5-c-pagination .pf-v5-c-menu-toggle::after {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-pagination .pf-v5-c-menu-toggle:hover {
+  background: var(--axis-surface-subdued) !important;
+}
+
+.pf-v5-c-pagination,
+.pf-v5-c-pagination__nav,
+.pf-v5-c-pagination__nav-control {
+  align-items: center;
+}
+
+/* List toolbar refinements. Keep the search compact enough that the primary
+ * actions remain visually grouped on ordinary desktop widths. */
+.pf-v5-c-toolbar
+  :is(.pf-v5-c-search-input, .pf-v5-c-text-input-group.axis-search-input) {
+  width: 250px;
+  max-width: 100%;
+  height: 56px;
+  min-height: 56px;
+}
+
+.pf-v5-c-toolbar
+  :is(.pf-v5-c-search-input, .pf-v5-c-text-input-group.axis-search-input)
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-text-input-group__main,
+    .pf-v5-c-text-input-group__text,
+    .pf-v5-c-text-input-group__text-input,
+    input
+  ) {
+  height: 54px;
+  min-height: 54px;
+}
+
+/* Use the Axis brand color for navigational links and tab indicators. Do not
+ * override semantic status colors (danger, warning, success, etc.). */
+.pf-v5-c-page__main a:not(.pf-m-danger, .pf-m-warning) {
+  color: var(--axis-primary-active);
+}
+
+.pf-v5-c-page__main a:not(.pf-m-danger, .pf-m-warning):hover {
+  color: var(--axis-primary-hover);
+}
+
+.pf-v5-c-tabs__item.pf-m-current .pf-v5-c-tabs__link::after {
+  border: 0 !important;
+}
+
+/* PatternFly components that retain their own active/link color variables. */
+:is(
+  .pf-v5-c-tabs,
+  .pf-v5-c-menu,
+  .pf-v5-c-dropdown,
+  .pf-v5-c-select,
+  .pf-v5-c-pagination
+) {
+  --pf-v5-global--active-color--100: var(--axis-primary);
+  --pf-v5-global--active-color--200: var(--axis-primary-hover);
+  --pf-v5-global--link--Color: var(--axis-primary-active);
+  --pf-v5-global--link--Color--hover: var(--axis-primary-hover);
+}
+
+.pf-v5-c-menu__list-item.pf-m-selected,
+.pf-v5-c-menu__item.pf-m-selected {
+  color: var(--axis-primary-active);
+  background: var(--axis-primary-soft);
+}
+
+/* Compact, balanced per-page selector. */
+.pf-v5-c-pagination .pf-v5-c-menu-toggle {
+  min-width: 88px;
+  padding-inline: 12px !important;
+}
+
+.pf-v5-c-pagination .pf-v5-c-menu-toggle__controls {
+  margin-inline-start: 12px;
+}
+
+/* The action column is part of the same table surface. PatternFly otherwise
+ * leaves its empty header cell outside the subdued header background. */
+.pf-v5-c-table > thead > tr > :last-child {
+  background: var(--axis-surface-subdued) !important;
+}
+
+.pf-v5-c-table > tbody > tr > :last-child {
+  background-color: inherit;
+}
+
+/* Kebab actions should read as lightweight icons, not outlined input-like
+ * controls. Preserve a subtle hover target for discoverability. */
+.pf-v5-c-table
+  :is(.pf-v5-c-table__action, td:last-child)
+  .pf-v5-c-button.pf-m-plain {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 8px;
+  border: 0 !important;
+  border-radius: 10px;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.pf-v5-c-table
+  :is(.pf-v5-c-table__action, td:last-child)
+  .pf-v5-c-button.pf-m-plain:hover {
+  background: var(--axis-surface-subdued) !important;
+}
+
+/* Desktop tables already expose the complete pagination control in the top
+ * toolbar. Avoid repeating the same selector below the final row; retain the
+ * bottom control on narrow screens where PatternFly relies on it. */
+@media screen and (min-width: 768px) {
+  .pf-v5-c-pagination.pf-m-bottom {
+    display: none !important;
+  }
+}
+
+/* Shared data-table controls --------------------------------------------
+ * These classes live on KeycloakDataTable itself. They intentionally avoid
+ * relying on PatternFly's generated DOM order, which differs between minor
+ * releases and made the earlier generic selectors ineffective. */
+.axis-table-search-group {
+  width: 270px !important;
+  min-width: 270px;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  align-self: center !important;
+  flex: 0 0 270px !important;
+  box-sizing: border-box;
+  border: 0 !important;
+  border-radius: 14px !important;
+  box-shadow: none !important;
+}
+
+.axis-table-search {
+  width: 100%;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  align-self: center !important;
+  box-sizing: border-box;
+  border: 1px solid var(--axis-border-strong) !important;
+  border-radius: 14px !important;
+  background: var(--axis-surface) !important;
+  box-shadow: none !important;
+}
+
+/* SearchInput is composed from several nested PatternFly wrappers. Lock all
+ * of them to the same toolbar height so the input cannot stretch taller than
+ * the adjacent primary action. */
+.axis-table-search
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-text-input-group,
+    .pf-v5-c-text-input-group__main,
+    .pf-v5-c-text-input-group__text
+  ) {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  box-sizing: border-box;
+}
+
+.axis-table-search::before,
+.axis-table-search::after {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.axis-table-search:focus-within {
+  border-color: var(--axis-primary) !important;
+  box-shadow: 0 0 0 1px var(--axis-primary) !important;
+}
+
+.axis-table-search :is(input, .pf-v5-c-text-input-group__text-input) {
+  height: 40px !important;
+  min-height: 40px !important;
+  max-height: 40px !important;
+  padding-block: 4px !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* PatternFly's SearchInput keeps an intrinsic block-size through component
+ * variables in some builds. Target the stable test id inside the shared table
+ * toolbar and reset every structural wrapper so it matches the 56px primary
+ * button next to it. */
+[data-testid="table-toolbar"]
+  .pf-v5-c-toolbar__item:has([data-testid="table-search-input"]) {
+  height: 42px !important;
+  min-height: 0 !important;
+  max-height: 42px !important;
+  align-self: center !important;
+  overflow: visible;
+}
+
+[data-testid="table-toolbar"] .axis-table-search-group,
+[data-testid="table-toolbar"] [data-testid="table-search-input"] {
+  --pf-v5-c-search-input--Height: 42px;
+  --pf-v5-c-text-input-group--MinHeight: 42px;
+  height: 42px !important;
+  block-size: 42px !important;
+  min-block-size: 0 !important;
+  max-block-size: 42px !important;
+  padding-block: 0 !important;
+  overflow: hidden;
+}
+
+[data-testid="table-toolbar"]
+  [data-testid="table-search-input"]
+  :is(
+    .pf-v5-c-search-input__bar,
+    .pf-v5-c-text-input-group,
+    .pf-v5-c-text-input-group__main,
+    .pf-v5-c-text-input-group__text,
+    .pf-v5-c-text-input-group__text-input,
+    input
+  ) {
+  height: 40px !important;
+  block-size: 40px !important;
+  min-block-size: 0 !important;
+  max-block-size: 40px !important;
+  padding-block: 0 !important;
+  box-sizing: border-box;
+}
+
+.axis-table-pagination .pf-v5-c-menu-toggle {
+  min-width: 82px !important;
+  padding-inline: 14px !important;
+}
+
+.axis-table-pagination .pf-v5-c-menu-toggle__controls {
+  margin-inline-start: 10px !important;
+}
+
+.axis-data-table .axis-table-action-header {
+  width: 72px;
+  min-width: 72px;
+  background: var(--axis-surface-subdued) !important;
+}
+
+.axis-data-table .axis-table-action-cell {
+  width: 72px;
+  min-width: 72px;
+  padding-inline: 12px !important;
+}
+
+.axis-data-table .axis-table-action-menu .pf-v5-c-menu-toggle,
+.axis-data-table .axis-table-action-menu .pf-v5-c-menu-toggle.pf-m-plain {
+  min-width: 40px !important;
+  min-height: 40px !important;
+  padding: 8px !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.axis-data-table .axis-table-action-menu .pf-v5-c-menu-toggle::before,
+.axis-data-table .axis-table-action-menu .pf-v5-c-menu-toggle::after {
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.axis-data-table .axis-table-action-menu .pf-v5-c-menu-toggle:hover {
+  background: var(--axis-surface-subdued) !important;
+}
+
+/* Keep every table cell aligned to the visual center of its row, including
+ * wrapped values and the action menu. */
+.axis-data-table > tbody > tr > td,
+.axis-data-table > thead > tr > th {
+  vertical-align: middle !important;
+}
+
+.axis-data-table .axis-table-action-cell,
+.axis-data-table .axis-table-action-menu {
+  vertical-align: middle !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.axis-data-table .axis-table-action-cell {
+  height: 100%;
+}
+
+/* Client home links use a single compact row, with the external-link icon
+ * preceding the URL instead of dropping onto a second line. */
+.axis-client-home-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.axis-client-home-link svg {
+  order: -1;
+  flex: 0 0 auto;
+}
+
+@media screen and (max-width: 767px) {
+  .axis-table-search-group {
+    width: 100% !important;
+    min-width: 0;
+  }
+}

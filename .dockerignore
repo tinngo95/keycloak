@@ -1,0 +1,9 @@
+.git
+.github
+.idea
+.vscode
+**/target
+**/node_modules
+quarkus/data
+*.log
+.env

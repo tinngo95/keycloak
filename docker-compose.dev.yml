@@ -1,0 +1,6 @@
+services:
+  keycloak:
+    environment:
+      # Load the Admin UI from the local Vite development server.
+      KC_ADMIN_VITE_URL: http://localhost:5174
+
